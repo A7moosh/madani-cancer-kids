@@ -8,10 +8,10 @@ service cloud.firestore {
     match /needs/{needId} {
       allow read: if true;
       allow create: if request.resource.data.keys().hasOnly([
-          "title", "hospital", "kind", "bloodType", "units", "phone", "urgency", "createdAt"
+          "title", "hospital", "kind", "category", "bloodType", "units", "phone", "urgency", "createdAt"
         ])
         && request.resource.data.keys().hasAll([
-          "title", "hospital", "kind", "bloodType", "units", "phone", "urgency", "createdAt"
+          "title", "hospital", "kind", "category", "bloodType", "units", "phone", "urgency", "createdAt"
         ])
         && request.resource.data.title is string
         && request.resource.data.title.size() > 0
@@ -20,6 +20,8 @@ service cloud.firestore {
         && request.resource.data.hospital.size() > 0
         && request.resource.data.hospital.size() <= 100
         && request.resource.data.kind in ["blood", "medical"]
+        && request.resource.data.category is string
+        && request.resource.data.category.size() > 0
         && request.resource.data.bloodType in ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]
         && request.resource.data.units is int
         && request.resource.data.units >= 1
@@ -44,7 +46,7 @@ service cloud.firestore {
         && request.resource.data.phone.size() >= 7
         && request.resource.data.phone.size() <= 24
         && request.resource.data.participation in ["join", "new"]
-        && request.resource.data.day in ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"]
+        && request.resource.data.day in ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"]
         && request.resource.data.note is string
         && request.resource.data.note.size() <= 400
         && validCreatedAt();
@@ -53,7 +55,37 @@ service cloud.firestore {
 
     match /teams/{teamId} {
       allow read: if true;
-      allow write: if false;
+      allow create, update: if request.resource.data.day in ["الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس"]
+        && request.resource.data.teamName is string
+        && request.resource.data.teamName.size() > 0
+        && request.resource.data.teamName.size() <= 80
+        && request.resource.data.capacity is int
+        && request.resource.data.capacity >= 1
+        && request.resource.data.capacity <= 100
+        && request.resource.data.meal is string
+        && request.resource.data.meal.size() <= 100;
+      allow delete: if false;
+    }
+
+    match /activities/{activityId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(["title", "category", "description", "date", "createdAt"])
+        && request.resource.data.title is string
+        && request.resource.data.category is string
+        && request.resource.data.description is string
+        && request.resource.data.date is string
+        && validCreatedAt();
+      allow update, delete: if false;
+    }
+
+    match /gallery/{photoId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasAll(["title", "caption", "imageUrl", "createdAt"])
+        && request.resource.data.title is string
+        && request.resource.data.caption is string
+        && request.resource.data.imageUrl is string
+        && validCreatedAt();
+      allow update, delete: if false;
     }
   }
 }
