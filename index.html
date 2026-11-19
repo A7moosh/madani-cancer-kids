@@ -227,8 +227,10 @@
       <label class="form-field">نوع النشاط<select name="category"><option>إفطار رمضان</option><option>ستر الجسماني</option><option>إفطار المدارس</option><option>سقيا المدارس والإنابر</option><option>طوارئ وأزمات</option><option>ممر المحبة — مستشفى الكلى</option></select></label>
       <label class="form-field">التفاصيل<textarea name="description" required rows="4" maxlength="500" placeholder="اكتب نبذة مختصرة عن النشاط وهدفه"></textarea></label>
       <label class="form-field">موعد أو مدة النشاط<input name="date" maxlength="80" placeholder="مثال: الأحد — الخميس"></label>
+      <label class="form-field">صورة من الجهاز (اختياري)<input name="image" type="file" accept="image/*"></label>
+      <label class="form-field">أو رابط صورة مباشر (اختياري)<input name="imageUrl" type="url" maxlength="2048" placeholder="https://example.com/image.jpg"></label>
       <button class="button button-primary form-submit" type="submit">نشر النشاط <span aria-hidden="true">←</span></button>
-      <p class="form-hint">يتم حفظ النشاط والصورة عند توفرها في قاعدة بيانات المبادرة.</p>
+      <p class="form-hint">اختر صورة من جهازك أو أضف رابطاً مباشراً. تُضغط الصورة تلقائياً قبل حفظها في قاعدة البيانات (بحد أقصى 700 كيلوبايت).</p>
     </form>
   </dialog>
 
