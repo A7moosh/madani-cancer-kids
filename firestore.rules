@@ -1,0 +1,59 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function validCreatedAt() {
+      return request.resource.data.createdAt == request.time;
+    }
+
+    match /needs/{needId} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly([
+          "title", "hospital", "kind", "bloodType", "units", "phone", "urgency", "createdAt"
+        ])
+        && request.resource.data.keys().hasAll([
+          "title", "hospital", "kind", "bloodType", "units", "phone", "urgency", "createdAt"
+        ])
+        && request.resource.data.title is string
+        && request.resource.data.title.size() > 0
+        && request.resource.data.title.size() <= 100
+        && request.resource.data.hospital is string
+        && request.resource.data.hospital.size() > 0
+        && request.resource.data.hospital.size() <= 100
+        && request.resource.data.kind in ["blood", "medical"]
+        && request.resource.data.bloodType in ["O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"]
+        && request.resource.data.units is int
+        && request.resource.data.units >= 1
+        && request.resource.data.units <= 99
+        && request.resource.data.phone == "+249919620990"
+        && request.resource.data.urgency in ["urgent", "ongoing"]
+        && validCreatedAt();
+      allow update, delete: if false;
+    }
+
+    match /volunteers/{volunteerId} {
+      allow create: if request.resource.data.keys().hasOnly([
+          "name", "phone", "participation", "day", "note", "createdAt"
+        ])
+        && request.resource.data.keys().hasAll([
+          "name", "phone", "participation", "day", "note", "createdAt"
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() >= 7
+        && request.resource.data.phone.size() <= 24
+        && request.resource.data.participation in ["join", "new"]
+        && request.resource.data.day in ["السبت", "الأحد", "الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة"]
+        && request.resource.data.note is string
+        && request.resource.data.note.size() <= 400
+        && validCreatedAt();
+      allow read, update, delete: if false;
+    }
+
+    match /teams/{teamId} {
+      allow read: if true;
+      allow write: if false;
+    }
+  }
+}
