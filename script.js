@@ -430,23 +430,58 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstati
 
   const menuToggle = document.querySelector(".menu-toggle");
   const navLinks = document.querySelector(".nav-links");
+  const pageTabs = [...document.querySelectorAll(".page-tab")];
+  const pageTabIds = new Set(pageTabs.map((tab) => tab.id));
+  const resolvePageTab = (hash) => {
+    const id = decodeURIComponent(hash.replace(/^#/, ""));
+    const targetId = id === "join" ? "kitchen" : id;
+    return pageTabIds.has(targetId) ? targetId : "home";
+  };
+  const closeMobileMenu = () => {
+    navLinks.classList.remove("open");
+    menuToggle.setAttribute("aria-expanded", "false");
+    menuToggle.setAttribute("aria-label", "فتح القائمة");
+  };
+  const showPageTab = (id, shouldScroll = false) => {
+    const targetId = pageTabIds.has(id) ? id : "home";
+    pageTabs.forEach((tab) => tab.classList.toggle("active", tab.id === targetId));
+    navLinks.querySelectorAll(".nav-tab").forEach((tab) => {
+      tab.classList.toggle("active", resolvePageTab(tab.hash) === targetId);
+    });
+    closeMobileMenu();
+    if (shouldScroll) window.scrollTo(0, 0);
+  };
+  const navigateToPageTab = (id) => {
+    const targetId = pageTabIds.has(id) ? id : (id === "join" ? "kitchen" : "home");
+    if (window.location.hash !== `#${id}`) {
+      window.history.pushState(null, "", `#${id}`);
+    }
+    showPageTab(targetId, true);
+  };
+
   menuToggle.addEventListener("click", () => {
     const isOpen = navLinks.classList.toggle("open");
     menuToggle.setAttribute("aria-expanded", String(isOpen));
     menuToggle.setAttribute("aria-label", isOpen ? "إغلاق القائمة" : "فتح القائمة");
   });
-  navLinks.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      navLinks.classList.remove("open");
-      menuToggle.setAttribute("aria-expanded", "false");
-      menuToggle.setAttribute("aria-label", "فتح القائمة");
-      navLinks.querySelectorAll(".nav-tab").forEach((tab) => tab.classList.remove("active"));
-      link.classList.add("active");
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    const id = decodeURIComponent(link.hash.slice(1));
+    if (!pageTabIds.has(id) && id !== "join") return;
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      navigateToPageTab(id);
+      if (link.classList.contains("campaign-link") && id === "donate") {
+        showToast("اختر طريقة المساهمة المناسبة من الحسابات أدناه.");
+      }
     });
   });
-  document.querySelectorAll('a[href="#donate"].campaign-link').forEach((link) => {
-    link.addEventListener("click", () => showToast("اختر طريقة المساهمة المناسبة من الحسابات أدناه."));
+  window.addEventListener("hashchange", () => {
+    showPageTab(resolvePageTab(window.location.hash), true);
   });
+  window.addEventListener("popstate", () => {
+    showPageTab(resolvePageTab(window.location.hash), true);
+  });
+  showPageTab(resolvePageTab(window.location.hash));
 
   document.getElementById("current-year").textContent = new Date().getFullYear();
   document.querySelector(".brand-logo").src = "logo.png";
