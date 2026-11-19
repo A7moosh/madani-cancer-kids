@@ -20,11 +20,11 @@
   ];
   const initialNeeds = [
     { id: "need-1", title: "حالة طفلة تحتاج متبرعين", hospital: "مستشفى الأورام — ود مدني", bloodType: "O-", units: 2, urgency: "urgent", phone: "+249919620990", kind: "blood" },
-    { id: "need-2", title: "حالة طفل — نقل دم", hospital: "مستشفى ود مدني التعليمي", bloodType: "A+", units: 1, urgency: "ongoing", phone: "+249911234567", kind: "blood" },
-    { id: "need-3", title: "نداء عاجل لمريضة", hospital: "مركز علاج الأورام — مدني", bloodType: "B+", units: 3, urgency: "urgent", phone: "+249901234567", kind: "blood" },
-    { id: "need-4", title: "طفل بحاجة إلى متبرع", hospital: "مستشفى الأطفال — ود مدني", bloodType: "O+", units: 2, urgency: "ongoing", phone: "+249912223344", kind: "blood" },
-    { id: "need-5", title: "حالة طارئة — فصيلة AB", hospital: "مستشفى الأورام — ود مدني", bloodType: "AB+", units: 1, urgency: "urgent", phone: "+249911112233", kind: "blood" },
-    { id: "need-6", title: "مستلزمات طبية للأطفال", hospital: "مركز علاج الأورام — مدني", bloodType: "A-", units: 1, urgency: "ongoing", phone: "+249901112233", kind: "medical" }
+    { id: "need-2", title: "حالة طفل — نقل دم", hospital: "مستشفى ود مدني التعليمي", bloodType: "A+", units: 1, urgency: "ongoing", phone: "+249919620990", kind: "blood" },
+    { id: "need-3", title: "نداء عاجل لمريضة", hospital: "مركز علاج الأورام — مدني", bloodType: "B+", units: 3, urgency: "urgent", phone: "+249919620990", kind: "blood" },
+    { id: "need-4", title: "طفل بحاجة إلى متبرع", hospital: "مستشفى الأطفال — ود مدني", bloodType: "O+", units: 2, urgency: "ongoing", phone: "+249919620990", kind: "blood" },
+    { id: "need-5", title: "حالة طارئة — فصيلة AB", hospital: "مستشفى الأورام — ود مدني", bloodType: "AB+", units: 1, urgency: "urgent", phone: "+249919620990", kind: "blood" },
+    { id: "need-6", title: "مستلزمات طبية للأطفال", hospital: "مركز علاج الأورام — مدني", bloodType: "A-", units: 1, urgency: "ongoing", phone: "+249919620990", kind: "medical" }
   ];
   const filters = ["الكل", "O+", "O-", "A+", "A-", "B+", "B-", "AB+", "AB-"];
   const scheduleGrid = document.getElementById("schedule-grid");
@@ -121,7 +121,7 @@
       return;
     }
     bloodGrid.innerHTML = filtered.map((need) => {
-      const phone = normalizePhone(need.phone);
+      const phone = normalizePhone(COORDINATOR_PHONE);
       const title = escapeHtml(need.title);
       const hospital = escapeHtml(need.hospital);
       const urgency = need.urgency === "urgent" ? "عاجل جداً" : "مستمر";
@@ -195,7 +195,7 @@
       kind: String(data.get("kind")),
       bloodType: String(data.get("bloodType")),
       units: Number(data.get("units")),
-      phone: String(data.get("phone")).trim(),
+      phone: COORDINATOR_PHONE,
       urgency: String(data.get("urgency"))
     };
     if (!need.title || !need.hospital || !need.phone || !Number.isInteger(need.units) || need.units < 1) return;
